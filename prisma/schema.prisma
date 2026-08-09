@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum MovementType {
+  INGRESO
+  GASTO_FIJO
+  GASTO_VARIABLE
+  AHORRO
+  INVERSION
+}
+
+model Account {
+  id             String   @id @default(cuid())
+  key            String   @unique
+  name           String
+  function       String
+  initialBalance Int      @default(0)
+  active         Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  movements Movement[]
+
+  @@index([active, sortOrder])
+}
+
+model Movement {
+  id          String       @id @default(cuid())
+  date        DateTime     @db.Date
+  type        MovementType
+  category    String
+  description String       @default("")
+  amount      Int
+  notes       String       @default("")
+  accountId   String
+  account     Account      @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([date])
+  @@index([accountId])
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Finanzas RMA",
+  "short_name": "Finanzas",
+  "description": "Flujo de caja y control de cuentas",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#161513",
+  "theme_color": "#161513"
+}

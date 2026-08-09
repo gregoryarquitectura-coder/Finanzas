@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink text-champagne antialiased;
+    background-image:
+      radial-gradient(120% 90% at 50% -10%, rgba(209, 162, 94, 0.08) 0%, rgba(22, 21, 19, 0) 55%),
+      linear-gradient(180deg, #17151300 0%, #0e0d0c 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: rgba(255, 166, 65, 0.35);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(209, 162, 94, 0.25);
+    border-radius: 999px;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply relative rounded-2xl border border-gold/15 bg-ink-light/70 shadow-panel backdrop-blur-sm;
+  }
+
+  .label-caps {
+    @apply font-label uppercase tracking-widest2 text-[11px] text-stone;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full border border-gold/40 bg-gradient-to-b from-gold/20 to-gold/5 px-5 py-2.5 font-label text-xs uppercase tracking-[0.18em] text-champagne transition-colors hover:border-amber/60 hover:text-amber active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full border border-stone/30 px-5 py-2.5 font-label text-xs uppercase tracking-[0.18em] text-stone transition-colors hover:border-champagne/50 hover:text-champagne;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-stone/30 bg-ink/60 px-4 py-3 font-label text-sm text-champagne placeholder:text-stone/60 outline-none transition-colors focus:border-gold/60;
+  }
+}
