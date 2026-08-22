@@ -28,15 +28,11 @@ npm run dev
 
 Mismo procedimiento que con Hábitos: crea un proyecto en Supabase, usa la connection string del **pooler** (Transaction para `DATABASE_URL`, Session para `DIRECT_URL` — la conexión "Directa" normal es IPv6-only y no conecta desde redes comunes), sube el repo a GitHub, e impórtalo en Vercel agregando las mismas variables de entorno que en `.env.local`.
 
-## 3. Escanear boletas con IA
+## 3. Escanear boletas (OCR gratis)
 
-La vista **Movimientos → 📷 Escanear boleta** manda la foto a la API de Claude (Anthropic) para leer el monto, comercio, fecha y categoría, y precarga el formulario de "Nuevo movimiento" — tú eliges la tarjeta y confirmas.
+La vista **Movimientos → 📷 Escanear boleta** lee el texto de la foto con OCR directo en el navegador ([tesseract.js](https://github.com/naptha/tesseract.js), sin costo ni API key) y con reglas simples (`lib/receiptParser.ts`) adivina monto, fecha y categoría, precargando el formulario de "Nuevo movimiento" — tú siempre eliges la tarjeta y confirmas.
 
-1. Crea una API key en [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys).
-2. Agrega `ANTHROPIC_API_KEY` en `.env.local` y en las variables de entorno de Vercel.
-3. Opcional: `ANTHROPIC_MODEL` para cambiar el modelo (por defecto `claude-sonnet-5`).
-
-El monto queda marcado para que lo revises antes de guardar — la IA puede leer mal un número, la cuenta que golpea siempre la eliges tú a mano.
+No es tan preciso como una IA con visión — es reconocimiento de texto plano más heurísticas, así que hay que revisar todos los campos antes de guardar (el formulario muestra un aviso cuando vienen de un escaneo). Si más adelante quieres mejor precisión, se puede reemplazar por una API de visión (Claude, Google Vision, etc.) sin cambiar el resto del flujo — solo lo que pasa dentro de `ScanReceiptView.tsx`.
 
 ## Estructura
 

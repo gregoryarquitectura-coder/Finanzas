@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { extractAmount, extractDate, guessCategory, guessMerchant } from "@/lib/receiptParser";
 
-function resizeImage(file: File, maxDim = 1600, quality = 0.85): Promise<Blob> {
+function resizeImage(file: File, maxDim = 1800, quality = 0.9): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -47,36 +48,40 @@ export default function ScanReceiptView() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [progressLabel, setProgressLabel] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
     setError(null);
     setPreview(URL.createObjectURL(file));
     setAnalyzing(true);
+    setProgressLabel("Preparando imagen…");
     try {
       const resized = await resizeImage(file);
-      const formData = new FormData();
-      formData.append("image", resized, "boleta.jpg");
-      const res = await fetch("/api/scan-receipt", { method: "POST", body: formData });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "No se pudo analizar la boleta");
 
-      const e = body.extraction as {
-        amount: number | null;
-        merchant: string;
-        date: string | null;
-        category: string | null;
-      };
+      setProgressLabel("Leyendo texto (OCR)…");
+      const { createWorker } = await import("tesseract.js");
+      const worker = await createWorker("spa");
+      const {
+        data: { text },
+      } = await worker.recognize(resized);
+      await worker.terminate();
+
+      const amount = extractAmount(text);
+      const date = extractDate(text);
+      const category = guessCategory(text);
+      const merchant = guessMerchant(text);
+
       const params = new URLSearchParams();
       params.set("scanned", "1");
       params.set("type", "GASTO_VARIABLE");
-      if (e.amount != null) params.set("amount", String(e.amount));
-      if (e.merchant) params.set("description", e.merchant);
-      if (e.date) params.set("date", e.date);
-      if (e.category) params.set("category", e.category);
+      if (amount != null) params.set("amount", String(amount));
+      if (merchant) params.set("description", merchant);
+      if (date) params.set("date", date);
+      if (category) params.set("category", category);
       router.push(`/movements/new?${params.toString()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo analizar la boleta");
+      setError(err instanceof Error ? err.message : "No se pudo leer la boleta");
       setAnalyzing(false);
     }
   }
@@ -115,7 +120,7 @@ export default function ScanReceiptView() {
       {analyzing && (
         <div className="panel flex items-center gap-3 p-4">
           <span className="h-2 w-2 animate-pulse rounded-full bg-amber" />
-          <p className="font-label text-sm text-stone">Leyendo la boleta con IA…</p>
+          <p className="font-label text-sm text-stone">{progressLabel}</p>
         </div>
       )}
 
@@ -133,6 +138,10 @@ export default function ScanReceiptView() {
           </button>
         </div>
       )}
+
+      <p className="text-center font-label text-xs text-stone/70">
+        Lectura automática de texto (OCR), sin costo. No es perfecta — revisa todos los campos antes de guardar.
+      </p>
     </div>
   );
 }

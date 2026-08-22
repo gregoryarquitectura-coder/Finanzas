@@ -99,8 +99,8 @@ export default function MovementForm({
         <div className="flex items-start gap-2.5 rounded-xl border border-amber/30 bg-amber/10 px-4 py-3 text-sm font-label text-amber">
           <span>📷</span>
           <span>
-            Datos leídos de la boleta con IA — revisa el <strong>monto</strong> antes de guardar, y elige la
-            tarjeta que usaste.
+            Datos leídos automáticamente por OCR (sin IA) — el reconocimiento de texto no es perfecto, revisa
+            <strong> todos los campos</strong> (sobre todo el monto) y elige la tarjeta que usaste.
           </span>
         </div>
       )}
