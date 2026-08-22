@@ -45,7 +45,8 @@ function resizeImage(file: File, maxDim = 1800, quality = 0.9): Promise<Blob> {
 
 export default function ScanReceiptView() {
   const router = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [progressLabel, setProgressLabel] = useState("");
@@ -88,24 +89,50 @@ export default function ScanReceiptView() {
 
   return (
     <div className="space-y-4">
-      <button
-        type="button"
-        onClick={() => fileRef.current?.click()}
-        disabled={analyzing}
-        className="panel flex w-full flex-col items-center gap-4 border-dashed p-10 text-center transition-colors hover:border-gold/40 disabled:opacity-60"
-      >
+      <div className="panel flex flex-col items-center gap-4 border-dashed p-8 text-center">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Vista previa de la boleta" className="max-h-64 rounded-lg object-contain" />
         ) : (
           <>
             <span className="text-4xl">📷</span>
-            <p className="font-label text-sm text-champagne">Toca para tomar una foto o elegir una captura</p>
+            <p className="font-label text-sm text-champagne">Toma una foto o elige una de tu galería</p>
             <p className="label-caps">JPG o PNG</p>
           </>
         )}
+
+        <div className="flex w-full flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            disabled={analyzing}
+            className="btn-primary flex-1 disabled:opacity-40"
+          >
+            📷 Tomar foto
+          </button>
+          <button
+            type="button"
+            onClick={() => galleryRef.current?.click()}
+            disabled={analyzing}
+            className="btn-ghost flex-1 disabled:opacity-40"
+          >
+            🖼️ Elegir de galería
+          </button>
+        </div>
+
         <input
-          ref={fileRef}
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFile(file);
+          }}
+        />
+        <input
+          ref={galleryRef}
           type="file"
           accept="image/*"
           className="hidden"
@@ -114,7 +141,7 @@ export default function ScanReceiptView() {
             if (file) handleFile(file);
           }}
         />
-      </button>
+      </div>
 
       {analyzing && (
         <div className="panel flex items-center gap-3 p-4">
