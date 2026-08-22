@@ -34,6 +34,17 @@ La vista **Movimientos → 📷 Escanear boleta** lee el texto de la foto con OC
 
 No es tan preciso como una IA con visión — es reconocimiento de texto plano más heurísticas, así que hay que revisar todos los campos antes de guardar (el formulario muestra un aviso cuando vienen de un escaneo). Si más adelante quieres mejor precisión, se puede reemplazar por una API de visión (Claude, Google Vision, etc.) sin cambiar el resto del flujo — solo lo que pasa dentro de `ScanReceiptView.tsx`.
 
+## 4. Integración con Cotizaciones RMA
+
+`app/api/integrations/register-movement` deja que otras apps del ecosistema (hoy: [cotizaciones-rma](../../06_INNOVACION_Y_PROTOTIPOS/Prototipos/cotizaciones-rma)) registren un movimiento sin sesión de navegador — se autentica con el header `x-integration-key`, que debe coincidir con `INTEGRATION_SECRET`. No pasa por el PIN ni por la regla de ruteo del formulario (esa validación vive del lado de quien llama).
+
+Body esperado:
+```json
+{ "date": "2026-08-20", "type": "INGRESO", "category": "Remodelacion / Obra", "accountKey": "negociorma", "description": "...", "amount": 150000, "notes": "" }
+```
+
+`accountKey` es la `key` estable de la cuenta (`santander`, `mercadopago`, `bancoestado`, `negociorma`, `efectivo`), no el id de la base de datos.
+
 ## Estructura
 
 ```

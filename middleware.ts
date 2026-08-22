@@ -5,7 +5,10 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 
-const PUBLIC_PATHS = new Set(["/login", "/api/auth/login"]);
+// /api/integrations/* se autentica con un secreto compartido (no el PIN) —
+// lo usan otras apps del ecosistema (ej. Cotizaciones) llamando por detrás,
+// sin sesión de navegador. Cada ruta ahí valida su propio x-integration-key.
+const PUBLIC_PATHS = new Set(["/login", "/api/auth/login", "/api/integrations/register-movement"]);
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
