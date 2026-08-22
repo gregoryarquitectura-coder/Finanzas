@@ -40,10 +40,13 @@ export default function MovementsView({ movements }: { movements: MovementRow[] 
         <p className="font-label text-sm text-stone">
           {movements.length} movimiento{movements.length === 1 ? "" : "s"}
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button onClick={() => exportCSV(movements)} className="btn-ghost !px-4 !py-2 text-[11px]">
             Exportar CSV
           </button>
+          <Link href="/movements/scan" className="btn-ghost !px-4 !py-2 text-[11px]">
+            📷 Escanear boleta
+          </Link>
           <Link href="/movements/new" className="btn-primary !px-4 !py-2 text-[11px]">
             + Nuevo movimiento
           </Link>

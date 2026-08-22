@@ -23,22 +23,36 @@ interface MovementInitial {
   notes: string;
 }
 
+interface MovementPrefill {
+  date?: string;
+  type?: MovementType;
+  category?: string;
+  description?: string;
+  amount?: number;
+}
+
 export default function MovementForm({
   accounts,
   initial,
+  prefill,
+  fromScan,
 }: {
   accounts: AccountOption[];
   initial?: MovementInitial;
+  prefill?: MovementPrefill;
+  fromScan?: boolean;
 }) {
   const router = useRouter();
   const isEdit = !!initial;
 
-  const [date, setDate] = useState(initial?.date ?? todayStr());
-  const [type, setType] = useState<MovementType>(initial?.type ?? "INGRESO");
-  const [category, setCategory] = useState(initial?.category ?? CATEGORIAS[0]);
+  const [date, setDate] = useState(initial?.date ?? prefill?.date ?? todayStr());
+  const [type, setType] = useState<MovementType>(initial?.type ?? prefill?.type ?? "INGRESO");
+  const [category, setCategory] = useState(initial?.category ?? prefill?.category ?? CATEGORIAS[0]);
   const [accountId, setAccountId] = useState(initial?.accountId ?? accounts[0]?.id ?? "");
-  const [description, setDescription] = useState(initial?.description ?? "");
-  const [amount, setAmount] = useState(initial ? String(initial.amount) : "");
+  const [description, setDescription] = useState(initial?.description ?? prefill?.description ?? "");
+  const [amount, setAmount] = useState(
+    initial ? String(initial.amount) : prefill?.amount != null ? String(prefill.amount) : ""
+  );
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -81,6 +95,16 @@ export default function MovementForm({
 
   return (
     <form onSubmit={handleSubmit} className="panel space-y-4 p-5">
+      {fromScan && (
+        <div className="flex items-start gap-2.5 rounded-xl border border-amber/30 bg-amber/10 px-4 py-3 text-sm font-label text-amber">
+          <span>📷</span>
+          <span>
+            Datos leídos de la boleta con IA — revisa el <strong>monto</strong> antes de guardar, y elige la
+            tarjeta que usaste.
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="label-caps mb-1.5 block">Fecha</label>

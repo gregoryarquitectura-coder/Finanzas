@@ -72,9 +72,14 @@ export default async function DashboardPage({
           <CategoryBarList items={data.categoryBreakdown} />
         </div>
 
-        <Link href="/movements/new" className="btn-primary block text-center">
-          + Registrar movimiento
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/movements/scan" className="btn-ghost flex-1 text-center">
+            📷 Escanear boleta
+          </Link>
+          <Link href="/movements/new" className="btn-primary flex-1 text-center">
+            + Registrar movimiento
+          </Link>
+        </div>
       </div>
 
       <NavBar />
