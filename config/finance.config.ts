@@ -61,6 +61,7 @@ export const TIPO_SIGN: Record<MovementType, 1 | -1> = {
 export const CATEGORIAS = [
   "Negocio RMA",
   "Remodelacion / Obra",
+  "Trabajo Externo",
   "Servicios",
   "Transporte",
   "Comida",
@@ -86,11 +87,19 @@ export interface LineaNegocio {
  * Líneas de negocio explícitas. Cualquier movimiento cuya categoría no esté
  * en ninguna de estas listas cae automáticamente en "Personal / Otros" —
  * no hay que mantener esa lista a mano.
+ *
+ * Agregar una línea acá SOLO la separa en el Dashboard/Líneas de Negocio —
+ * no le impone ninguna cuenta. Si además necesita una regla de ruteo propia
+ * (como RMA/Remodelación → Falabella), agrégala aparte en ROUTING_RULES.
  */
 export const LINEAS_NEGOCIO: LineaNegocio[] = [
   { key: "rma", label: "RMA (venta de piezas)", categorias: ["Negocio RMA"] },
   { key: "remo", label: "Remodelación / Obra", categorias: ["Remodelacion / Obra"] },
+  { key: "trabajo", label: "Trabajo Externo (freelance / McLarens)", categorias: ["Trabajo Externo"] },
 ];
+
+/** Categorías que la regla "negocio-falabella" obliga a ir a la cuenta Falabella. */
+const CATEGORIAS_CAJA_NEGOCIO_RMA: Categoria[] = ["Negocio RMA", "Remodelacion / Obra"];
 
 export const LINEA_PERSONAL = { key: "personal", label: "Personal / Otros" };
 
@@ -121,8 +130,7 @@ export const ROUTING_RULES: RoutingRule[] = [
     id: "negocio-falabella",
     message: "Negocio RMA/Remodelación debería ir a Falabella",
     check: (m) =>
-      !LINEAS_NEGOCIO.some((l) => (l.categorias as string[]).includes(m.category)) ||
-      m.accountKey === "negociorma",
+      !(CATEGORIAS_CAJA_NEGOCIO_RMA as string[]).includes(m.category) || m.accountKey === "negociorma",
   },
 ];
 
