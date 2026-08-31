@@ -98,8 +98,15 @@ export const LINEAS_NEGOCIO: LineaNegocio[] = [
   { key: "trabajo", label: "Trabajo Externo (freelance / McLarens)", categorias: ["Trabajo Externo"] },
 ];
 
-/** Categorías que la regla "negocio-falabella" obliga a ir a la cuenta Falabella. */
-const CATEGORIAS_CAJA_NEGOCIO_RMA: Categoria[] = ["Negocio RMA", "Remodelacion / Obra"];
+/**
+ * Categorías cuyo dinero debe vivir en la cuenta Falabella (negociorma) —
+ * usada tanto por la regla de ruteo "negocio-falabella" como por la alerta
+ * del dashboard que detecta mezcla de plata. Ojo: NO es lo mismo que
+ * LINEAS_NEGOCIO — agregar una línea de negocio nueva (como Trabajo Externo)
+ * no la agrega acá automáticamente, porque no todo ingreso "de negocio"
+ * tiene por qué caer en la caja de RMA.
+ */
+export const CATEGORIAS_CAJA_NEGOCIO_RMA: Categoria[] = ["Negocio RMA", "Remodelacion / Obra"];
 
 export const LINEA_PERSONAL = { key: "personal", label: "Personal / Otros" };
 

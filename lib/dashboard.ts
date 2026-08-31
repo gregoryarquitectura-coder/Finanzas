@@ -3,7 +3,7 @@ import { formatDateStr, monthOf, addMonths, currentMonthStr } from "./dates";
 import { accountBalance } from "./balances";
 import { routingViolation } from "./routing";
 import { totalsByBusinessLine, type LineTotals } from "./businessLines";
-import { LINEAS_NEGOCIO } from "@/config/finance.config";
+import { CATEGORIAS_CAJA_NEGOCIO_RMA } from "@/config/finance.config";
 import type { MovementType } from "@/config/finance.config";
 
 export interface AccountBalanceRow {
@@ -112,10 +112,9 @@ export async function getDashboardData(month: string): Promise<DashboardData> {
   });
 
   const negocioAccount = accountBalances.find((a) => a.key === "negociorma");
-  const ingresosNegocioHistorico = LINEAS_NEGOCIO.reduce(
-    (sum, l) => sum + (businessLines[l.key]?.ingresos ?? 0),
-    0
-  );
+  const ingresosNegocioHistorico = movsPlain
+    .filter((m) => m.type === "INGRESO" && (CATEGORIAS_CAJA_NEGOCIO_RMA as string[]).includes(m.category))
+    .reduce((sum, m) => sum + m.amount, 0);
 
   let alert: DashboardData["alert"];
   if (violations.length > 0) {
